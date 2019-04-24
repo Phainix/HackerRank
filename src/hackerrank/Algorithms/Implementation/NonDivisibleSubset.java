@@ -2,6 +2,8 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
+
+Challenge Link: https://www.hackerrank.com/challenges/non-divisible-subset/problem
  */
 
 package hackerrank.Algorithms.Implementation;
@@ -20,49 +22,68 @@ import java.util.regex.*;
  */
 public class NonDivisibleSubset {
     // Complete the nonDivisibleSubset function below.
-    static int nonDivisibleSubset(int k, int[] S) {
-        int[][] arrays = new int[S.length][S.length];
-//        ArrayList<Integer> excluded = new ArrayList<Integer>();
+    static int nonDivisibleSubset2(int k, int[] S) {
+        int max = 0;
         for(int i = 0; i < S.length; i++) {
             for(int j = (i+1); j < S.length; j++) {
                 
                 Map<Integer, Integer> excluded = new HashMap<Integer, Integer>();
                 
-                arrays[i][j] = S[i] + S[j];
                 int tempSum = S[i] + S[j];
                 int arrayCount = (tempSum % k) == 0 ? 0 : 2;
                 if(arrayCount == 2) {
+                    if(max < 2) max = 2;
+                    //System.out.println(S[i] + "+" + S[j] + "= Inivisible");
                     excluded.put(i, S[i]);
                     excluded.put(j, S[j]);
-                    excluded = recursivelyTraverseAndCompare(excluded, k, S);
-                    System.out.println(S[i] + "+" + S[j] + "=" + tempSum + " : " + excluded.values().toString() + " = " + excluded.size());
+                    Map<Integer, Integer> excludedIndexesMod = excluded;
+                    
+                    int start = j+1;
+                    
+                    here:
+                    for(int l = start; l < S.length; l++) {
+                        //System.out.println("        " + excludedIndexesMod.values().toString());
+
+                        for (int number : excludedIndexesMod.values()) {
+                            int tempSum2 = S[l] + number;
+                            Boolean sumIsFactor = (tempSum2 % k) == 0;
+
+                            if(sumIsFactor == true) continue here;
+
+                        }
+                        excludedIndexesMod.put(l, S[l]);
+                        if(max < excludedIndexesMod.size()) max = excludedIndexesMod.size();
+                    }
                 } else {
-                    System.out.println(S[i] + "+" + S[j] + "=" + tempSum + " : " + excluded.values().toString() + " = " + excluded.size());
+                    //System.out.println(S[i] + "+" + S[j] + "= Divisible");
+                    continue;
+                    // System.out.println(S[i] + "+" + S[j] + "=" + tempSum + " : " + excluded.values().toString() + " = " + excluded.size());
                 }
             }
         }
-        return k;
+        return max;
     }
     
-    static Map<Integer, Integer> recursivelyTraverseAndCompare(Map<Integer, Integer> excludedIndexes, int k, int[] S) {
-        
-        here:
+    static int nonDivisibleSubset(int k, int[] S) {
+        int[] rem_arrays = new int[k];
+        int count = 0;
         for(int i = 0; i < S.length; i++) {
-            if(excludedIndexes.containsKey(S[i])) continue;
-            
-            for (int number : excludedIndexes.values()) {
-                // int index = excludedIndexes.indexOf(number);
-                int tempSum2 = S[i] + number;
-                Boolean sumIsFactor = (tempSum2 % k) == 0;
-                
-                if(sumIsFactor == true) break here;
-                
+            int rem = S[i] % k;
+            rem_arrays[rem]++;
+            // System.out.print(rem + " ");
+        }
+        // System.out.println("");
+        // System.out.println(Arrays.toString(rem_arrays));
+        
+        for(int i = 1; i <= rem_arrays.length/2; i++) {
+            if(i == k-i) {
+                if(rem_arrays[i] > 0) count++;
+            } else {
+                count += Math.max(rem_arrays[i], rem_arrays[k-i]);
             }
-            // System.out.println(S[i]);
-            excludedIndexes.put(i, S[i]);
-        } 
-        // System.out.println(excludedIndexes.toString());
-        return excludedIndexes;
+        }
+        if(rem_arrays[0] > 0) count++;
+        return count;
     }
     
     public static void main(String[] args) {
