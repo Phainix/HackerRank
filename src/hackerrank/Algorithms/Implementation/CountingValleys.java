@@ -8,12 +8,7 @@ Challenge Link: https://www.hackerrank.com/challenges/counting-valleys/problem
 package hackerrank.Algorithms.Implementation;
 
 import java.io.*;
-import java.math.*;
-import java.security.*;
-import java.text.*;
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.regex.*;
 
 
 public class CountingValleys {
